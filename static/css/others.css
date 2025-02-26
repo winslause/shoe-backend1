@@ -1,0 +1,210 @@
+/* ... (previous styles remain unchanged) ... */
+
+/* Account/Profile Page Enhancements */
+.account-container {
+    min-height: 100vh;
+    padding: 2rem 0;
+    background-color: #f8f9fa;
+}
+
+.account-card {
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    overflow: hidden;
+}
+
+.account-card .card-body {
+    padding: 2.5rem;
+}
+
+.account-card h2 {
+    font-size: 2rem;
+    color: #072D4B;
+    margin-bottom: 1.5rem;
+}
+
+.account-card h3 {
+    font-size: 1.5rem;
+    color: #072D4B;
+    margin-bottom: 1rem;
+}
+
+.account-card .list-group-item {
+    border: none;
+    padding: 1rem 0;
+    background-color: transparent;
+    border-bottom: 1px solid #dee2e6;
+    transition: background-color 0.3s ease;
+}
+
+.account-card .list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+.account-card .btn-primary {
+    background-color: #072D4B;
+    border: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.account-card .btn-primary:hover {
+    background-color: #054d7a;
+}
+
+.account-card .btn-outline-success {
+    border-color: #4CAF50;
+    color: #4CAF50;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.account-card .btn-outline-success:hover {
+    background-color: #4CAF50;
+    color: #ffffff;
+}
+
+.account-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #4CAF50;
+}
+
+.form-control:disabled {
+    background-color: #e9ecef;
+    opacity: 0.7;
+}
+
+/* Order Modals */
+.modal-content {
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header, .modal-body, .modal-footer {
+    background-color: #ffffff;
+    border-color: #dee2e6;
+}
+
+.modal-title {
+    color: #072D4B;
+    font-weight: 600;
+}
+
+.modal-footer .btn {
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.modal-footer .btn-secondary {
+    background-color: #6c757d;
+    border: none;
+    color: #ffffff;
+}
+
+.modal-footer .btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Change Password Form */
+#changePasswordForm .input-group {
+    margin-bottom: 0.5rem;
+}
+
+#changePasswordForm .form-control {
+    border-radius: 8px;
+    border: 1px solid #4CAF50;
+    padding: 12px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#changePasswordForm .form-control:focus {
+    border-color: #36abdd;
+    box-shadow: 0 0 8px rgba(54, 171, 221, 0.3);
+}
+
+#changePasswordForm .btn-outline-secondary {
+    border-color: #4CAF50;
+    color: #4CAF50;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#changePasswordForm .btn-outline-secondary:hover {
+    background-color: #4CAF50;
+    color: #ffffff;
+}
+
+/* Responsive Design (Updated for Account Page) */
+@media (max-width: 768px) {
+    .account-card {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    .account-card h2 {
+        font-size: 1.5rem;
+    }
+
+    .account-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .form-control, .btn {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+
+    .account-avatar {
+        width: 100px;
+        height: 100px;
+    }
+
+    .list-group-item {
+        padding: 0.8rem 0;
+    }
+
+    .modal-dialog {
+        margin: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .account-card {
+        margin: 0.5rem;
+        padding: 1rem;
+    }
+
+    .account-card h2 {
+        font-size: 1.2rem;
+    }
+
+    .account-card h3 {
+        font-size: 1rem;
+    }
+
+    .form-control, .btn {
+        font-size: 0.875rem;
+        padding: 8px;
+    }
+
+    .account-avatar {
+        width: 80px;
+        height: 80px;
+    }
+
+    .list-group-item {
+        padding: 0.6rem 0;
+    }
+
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+}
+
+/* Animations */
+[data-aos] {
+    transition: all 0.5s ease-in-out;
+}

@@ -1,0 +1,216 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #1a2632;
+    color: #ffffff;
+}
+
+.navbar {
+    background-color: #2c3e50 !important; /* Dark green for KANAAK branding */
+}
+
+.navbar-brand, .nav-link.text-light {
+    color: #ffffff !important;
+}
+
+.sidebar {
+    background-color: #2c3e50;
+    padding: 20px;
+    border-right: 1px solid #34495e;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+.sidebar .nav-link {
+    color: #ffffff;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+.sidebar .nav-link.active {
+    background-color: #34495e;
+    font-weight: bold;
+}
+
+.card {
+    border: none;
+    border-radius: 8px;
+}
+
+.card.bg-dark {
+    background-color: #2c3e50;
+}
+
+.table-dark {
+    background-color: #2c3e50;
+    color: #ffffff;
+}
+
+.table-dark th, .table-dark td {
+    border-color: #34495e;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #218838;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #5a6268;
+}
+
+/* Footer Styling */
+footer.bg-dark {
+    background-color: #2c3e50 !important; /* Dark green for KANAAK branding */
+    color: #ffffff;
+}
+
+.footerMenuTitle {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.footerMenuList a {
+    transition: color 0.3s ease;
+}
+
+.footerMenuList a:hover {
+    color: #adb5bd !important; /* Light gray on hover for better contrast */
+}
+
+.footerInput {
+    border-radius: 0.25rem;
+    border: 1px solid #ffffff;
+    background-color: #34495e; /* Slightly lighter dark background for input */
+    color: #ffffff;
+}
+
+.footerButton {
+    border-radius: 0.25rem;
+    background-color: #34495e; /* Match input background */
+    border-color: #ffffff;
+    color: #ffffff;
+}
+
+.footerButton:hover {
+    background-color: #2c3e50;
+    border-color: #adb5bd;
+    color: #ffffff;
+}
+
+.footerIcons {
+    display: flex; /* Ensure horizontal layout by default */
+    justify-content: center; /* Center icons horizontally on all devices */
+    align-items: center; /* Vertically center icons */
+    flex-wrap: nowrap; /* Prevent wrapping to multiple rows */
+    gap: 1rem; /* Maintain spacing between icons */
+}
+
+.footerIcons img {
+    filter: brightness(0) invert(1); /* Makes icons white for dark background */
+}
+
+.footerIcons a:hover img {
+    filter: brightness(0.8) invert(1); /* Slightly dim on hover for interactivity */
+}
+
+.copyright {
+    font-size: 0.875rem;
+}
+
+.copyright a:hover {
+    color: #adb5bd !important; /* Light gray on hover for link */
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        background-color: #2c3e50 !important;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 56px; /* Height of navbar */
+        left: -250px;
+        width: 250px;
+        transition: left 0.3s ease-in-out;
+        z-index: 1000;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar.collapse.show {
+        left: 0;
+    }
+
+    .navbar-toggler {
+        margin-right: 10px;
+    }
+
+    .col-md-9, .col-md-3 {
+        width: 100%;
+    }
+
+    .footerLeft, .footerRight {
+        text-align: center;
+    }
+
+    .footerLeft .row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .footerMenu {
+        flex: 0 0 33.33%; /* Three columns on small devices */
+        max-width: 33.33%;
+        margin-bottom: 1.5rem;
+        padding: 0 0.5rem; /* Add padding for spacing between columns */
+    }
+
+    .footerMail {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footerInput, .footerButton {
+        width: 100% !important;
+        margin-bottom: 0.5rem;
+    }
+
+    .footerIcons {
+        justify-content: center !important; /* Ensure centered on mobile */
+        margin-top: 1rem;
+    }
+
+    .footerMenuTitle {
+        font-size: 1rem; /* Smaller title on mobile for better fit */
+    }
+
+    .footerMenuList a {
+        font-size: 0.9rem; /* Smaller text for mobile readability */
+    }
+
+    .copyright {
+        font-size: 0.75rem;
+    }
+}

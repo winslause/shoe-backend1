@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My KANAAN Shoe Collection Account</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='images/logo.webp') }}" type="image/webp" sizes="16x16" />
+</head>
+<body>
+    <!-- Navbar with Toggle for Small Devices -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark text-light shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold text-light" href="{{ url_for('brands') }}">KANAAN Shoe Collection</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-light" aria-current="page" href="{{ url_for('brands') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="{{ url_for('brands') }}">Brands</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-light" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {% if email %}
+                                Account ({{ email }})
+                            {% else %}
+                                Account
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% if email %}
+                                <li><a class="dropdown-item" href="{{ url_for('account') }}">My Account</a></li>
+                                <li><a class="dropdown-item" href="#order">My Orders</a></li>
+                                <li><a class="dropdown-item" href="#review">Reviews</a></li>
+                                <li><a class="dropdown-item" href="#inbox">Inbox</a></li>
+                                <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}">Logout</a></li>
+                            {% else %}
+                                <li><a class="dropdown-item" href="{{ url_for('login') }}">Sign In</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('signup') }}">Register</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid py-4">
+        <div class="row">
+            <!-- Sidebar (Collapsible on Small Devices) -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse" id="sidebar">
+                <h5 class="mb-4 text-dark">My KANAAN Account</h5>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#accountOverview" aria-current="page">Account Overview</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#order">My Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#review">Reviews</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#inbox">Inbox</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Main Content Area -->
+            <div class="col-md-9 col-lg-10">
+                <h2 class="mb-4">Account Overview</h2>
+                <div class="row">
+                    <!-- Account Details -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <h5>Account Details</h5>
+                                <p><strong>Name:</strong> {{ name or 'Winslaise Shioso' }}</p>
+                                <p><strong>Email:</strong> {{ email }}</p>
+                                <p><strong>Phone:</strong> {{ phone or session.get('user_phone', '0769525570') }}</p>
+                                <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button>
+                                <button class="btn btn-primary w-100 mt-2" data-bs-toggle="modal" data-bs-target="#updatePasswordModal">Update Password</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Book -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <h5>Address Book</h5>
+                                <p><strong>Your default shipping address:</strong></p>
+                                <p>{{ name or 'Winslaise Shioso' }}</p>
+                                <p>{{ email }}</p>
+                                <p>{{ phone or session.get('user_phone', '0769525570') }}</p>
+                                <p>{{ address or session.get('user_address', 'Kitale, Trans-Nzoia') }}</p>
+                                <p>+254 769525570 / +254 769525570</p>
+                                <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#editAddressModal">Edit Address</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- My Orders -->
+                    <div class="col-md-12 mb-4" id="orders">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5>My Orders</h5>
+                                <p>View all your shoe orders with KANAAN.</p>
+                                <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#myOrdersModal">Check All Orders</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews -->
+                    <div class="col-md-12" id="reviews">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5>Product Reviews</h5>
+                                <p>Leave reviews for your completed shoe purchases.</p>
+                                <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#reviewsModal">Review Completed Orders</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="profileForm">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" value="{{ name or 'Winslaise Shioso' }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" value="{{ email }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="phone" value="{{ phone or session.get('user_phone', '0769525570') }}" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Password Modal -->
+    <div class="modal fade" id="updatePasswordModal" tabindex="-1" aria-labelledby="updatePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updatePasswordModalLabel">Update Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="passwordForm">
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="currentPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Address Modal -->
+    <div class="modal fade" id="editAddressModal" tabindex="-1" aria-labelledby="editAddressModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addressForm">
+                        <div class="mb-3">
+                            <label for="addressName" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="addressName" value="{{ name or 'Winslaise Shioso' }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addressEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="addressEmail" value="{{ email }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addressPhone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="addressPhone" value="{{ phone or session.get('user_phone', '0769525570') }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="address" value="{{ address or session.get('user_address', 'Kitale, Trans-Nzoia') }}" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Orders Modal -->
+    <div class="modal fade" id="myOrdersModal" tabindex="-1" aria-labelledby="myOrdersModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myOrdersModalLabel">My Orders</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Product</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTable">
+                            <!-- Orders will be populated dynamically via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews Modal -->
+    <div class="modal fade" id="reviewsModal" tabindex="-1" aria-labelledby="reviewsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reviewsModalLabel">Review Completed Orders</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="review-section">
+                        <h6>Review Your Orders</h6>
+                        <p>Select an order to review:</p>
+                        <form id="reviewForm">
+                            <div class="mb-3">
+                                <label for="orderSelect" class="form-label">Select Order</label>
+                                <select class="form-select" id="orderSelect" required>
+                                    <option value="">Choose an order</option>
+                                    <!-- Options will be populated dynamically -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="rating" class="form-label">Rating</label>
+                                <select class="form-select" id="rating">
+                                <option value="5">5 Stars</option>
+                                <option value="4">4 Stars</option>
+                                <option value="3">3 Stars</option>
+                                <option value="2">2 Stars</option>
+                                <option value="1">1 Star</option>
+                            </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="reviewText" class="form-label">Review</label>
+                                <textarea class="form-control" id="reviewText" rows="3" placeholder="Write your review here..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Dependencies -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/account.js') }}"></script>
+</body>
+</html>

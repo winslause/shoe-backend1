@@ -1,0 +1,339 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #f8f8f8;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+.search-container {
+    flex-grow: 1;
+    margin: 0 20px;
+    display: flex !important; /* Override any hidden styles */
+    align-items: center;
+}
+
+#searchInput {
+    padding: 8px;
+    width: 300px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex-grow: 1;
+}
+
+#searchButton {
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.nav-link {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #333;
+    position: relative;
+}
+
+.nav-link .dropdown-arrow {
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+/* Remove the custom account-dropdown styles since Bootstrap handles it */
+.account-dropdown {
+    display: none; /* This can be removed or kept as a fallback, but Bootstrap will override */
+}
+
+/* Ensure Bootstrap dropdown doesn’t interfere with other nav links */
+.nav-right .dropdown-toggle::after {
+    display: none; /* Remove Bootstrap's default dropdown arrow to use your custom arrow */
+}
+
+/* ... (rest of the styles remain unchanged) ... */
+
+.container {
+    display: flex;
+    padding: 20px;
+}
+
+.sidebar {
+    width: 20%;
+    padding: 10px;
+    border-right: 1px solid #ddd;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    padding: 10px 0;
+    cursor: pointer;
+}
+
+.content {
+    width: 80%;
+    padding: 10px;
+}
+
+.sort-options {
+    margin-bottom: 20px;
+}
+
+.shoe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.shoe-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    max-width: 100%; /* Ensure card doesn’t exceed container */
+    overflow: hidden; /* Prevent overflow of child elements */
+}
+
+.shoe-item img {
+    width: 100%;
+    height: auto;
+}
+
+.shoe-item h3 {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.shoe-item .price {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.shoe-item .book-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.shoe-details {
+    display: none;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border: 1px solid #ddd;
+    margin-top: 10px;
+    border-radius: 4px;
+    max-width: 100%; /* Ensure it stays within card */
+    overflow-wrap: break-word; /* Break long words */
+    word-wrap: break-word; /* For older browsers */
+    max-height: 150px; /* Limit height for readability */
+    overflow-y: auto; /* Scroll if content exceeds max-height */
+    white-space: pre-wrap; /* Preserve whitespace and wrap text */
+}
+
+/* Truncate long text with ellipsis if needed (optional, remove if not desired) */
+.shoe-details.long-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Show only 3 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ui-autocomplete {
+    position: absolute;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #ddd;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.ui-menu-item {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.ui-menu-item:hover {
+    background-color: #f0f0f0;
+}
+
+/* Auth Pages Styling */
+.auth-page, .account-page {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+}
+
+.auth-page h2, .account-page h2 {
+    text-align: center;
+    color: #4CAF50;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.btn:hover {
+    background-color: #45a049;
+}
+
+.account-page .account-info {
+    margin-top: 20px;
+}
+
+.account-page .account-info p {
+    margin: 10px 0;
+}
+
+/* Media Query for Small Devices (e.g., tablets and phones, max-width: 768px) */
+@media screen and (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .logo {
+        margin-bottom: 10px;
+    }
+
+    .search-container {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    #searchInput {
+        width: 100%;
+    }
+
+    .nav-right {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #f8f8f8;
+        padding: 10px 0;
+        border-top: 1px solid #ddd;
+    }
+
+    .nav-right.active {
+        display: flex;
+    }
+
+    .nav-right a {
+        margin: 10px 20px;
+        display: block;
+    }
+
+    .dropdown-menu {
+        position: static;
+        width: 100%;
+        box-shadow: none;
+        border: none;
+        background-color: #f8f8f8;
+    }
+
+    .dropdown-menu .dropdown-item {
+        padding: 10px 20px;
+    }
+
+    /* Hamburger Menu for Navigation */
+    .hamburger {
+        display: block;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 10px;
+    }
+
+    /* Initially hide the nav-right and sidebar on small screens */
+    .sidebar, .nav-right {
+        display: none;
+    }
+
+    /* Show sidebar and nav-right when hamburger is clicked (handled in JavaScript) */
+    .sidebar.active, .nav-right.active {
+        display: block;
+    }
+
+    .sidebar.active {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .container {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
+    .content {
+        width: 100%;
+    }
+
+    /* Adjust shoe grid to 3 items per row */
+    .shoe-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Media Query for Very Small Devices (e.g., phones, max-width: 480px) */
+@media screen and (max-width: 480px) {
+    .shoe-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 items per row on very small screens */
+    }
+}
