@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="stylesheet" href="../static/css/others.css">
     <title>KANAAN SHOE COLLECTION - Login</title>
-    <!-- Favicon -->
     <link rel="icon" href="../static/images/logo.webp" type="image/webp" sizes="16x16" />
 </head>
 
@@ -37,7 +36,7 @@
                                 {% endfor %}
                             {% endif %}
                         {% endwith %}
-                        <!-- Form with Flask action -->
+                        <!-- Login Form -->
                         <form id="loginForm" class="needs-validation" method="POST" action="{{ url_for('login') }}" novalidate>
                             <div class="mb-3" data-aos="fade-right">
                                 <label for="email" class="form-label fw-bold text-dark">Email Address</label>
@@ -61,10 +60,32 @@
                             <button type="submit" class="btn btn-success w-100 py-3 fw-bold fs-5" data-aos="zoom-in">Sign In</button>
                             <div class="text-center mt-3" data-aos="fade-up">
                                 <p class="text-dark">Don't have an account? <a href="{{ url_for('signup') }}" class="text-success text-decoration-none fw-bold">Sign Up</a></p>
-                                <p class="text-dark">Forgot your password? <a href="#" class="text-success text-decoration-none fw-bold">Reset Password</a></p>
+                                <p class="text-dark">Forgot your password? <a href="#" class="text-success text-decoration-none fw-bold" data-bs-toggle="modal" data-bs-target="#resetPasswordModal">Reset Password</a></p>
                             </div>
                         </form>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Password Modal -->
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: rgba(255, 255, 255, 0.9); backdrop-filter: blur(5px); border-radius: 15px;">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-dark" id="resetPasswordModalLabel">Reset Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="resetPasswordForm" method="POST" action="{{ url_for('reset_password') }}">
+                        <div class="mb-3">
+                            <label for="resetEmail" class="form-label fw-bold text-dark">Email Address</label>
+                            <input type="email" class="form-control" id="resetEmail" name="email" placeholder="Enter your email" required>
+                            <div class="invalid-feedback">Please enter a valid email address.</div>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Send Reset Email</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -92,6 +113,16 @@
                     form.classList.add('was-validated');
                 }, false);
             });
+
+            // Reset password form validation
+            const resetForm = document.getElementById('resetPasswordForm');
+            resetForm.addEventListener('submit', event => {
+                if (!resetForm.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                resetForm.classList.add('was-validated');
+            }, false);
         })();
 
         document.getElementById('togglePassword').addEventListener('click', function () {

@@ -3,11 +3,24 @@ import sqlite3
 from datetime import datetime
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_mail import Mail, Message
+import random
+import string
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'  # Replace with a secure key in production
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Email configuration
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'wenbusale383@gmail.com'
+app.config['MAIL_PASSWORD'] = 'bfmd neqb ltiv txrp'  # App-specific password
+app.config['MAIL_DEFAULT_SENDER'] = 'maxwellusenaka@gmail.com'
+
+mail = Mail(app)
 
 # Ensure upload folder exists
 if not os.path.exists(UPLOAD_FOLDER):
@@ -118,7 +131,7 @@ def populate_initial_data():
             ('2025-02-27', 15, 7, 2000, -456.15),
             ('2025-02-28', 2, 15, 2000, 1000.00)
         ]
-        c.executemany('INSERT INTO sales (date, shoe_id, quantity, revenue, profit_loss) VALUES (?, ?, ?, ?, ?)', initial_sales)
+        c.executemany('INSERT INTO sales (date, shoe_id, quantity, revenue, profit_loss) VALUES (?, ?, ?, ?, ?)', initial_shoes)
         conn.commit()
         print("Sample sales data added")
     conn.close()
@@ -128,7 +141,6 @@ with app.app_context():
 
 @app.route('/')
 def index():
-    # Serve index.html as the landing page without requiring login
     return render_template('index.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -180,6 +192,53 @@ def login():
             flash('Invalid email or password!', 'error')
             return redirect(url_for('login'))
     return render_template('login.html')
+
+@app.route('/reset_password', methods=['POST'])
+def reset_password():
+    email = request.form.get('email')
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM users WHERE email = ?', (email,))
+    user = c.fetchone()
+    
+    if user:
+        # Generate a random temporary password
+        temp_password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+        hashed_temp_password = generate_password_hash(temp_password)
+        
+        # Update user's password in database
+        c.execute('UPDATE users SET password = ? WHERE email = ?', (hashed_temp_password, email))
+        conn.commit()
+        
+        # Send email with temporary password
+        msg = Message('Password Reset - Kanaan Shoe Collection',
+                     recipients=[email])
+        msg.body = f'''
+        Hello,
+
+        Your password has been reset. Please use the following temporary password to log in:
+        
+        Temporary Password: {temp_password}
+
+        After logging in, please change your password immediately from your account page: {url_for('account', _external=True)}
+
+        If you did not request this reset, please contact our support team.
+
+        Regards,
+        Kanaan Shoe Collection Team
+        '''
+        try:
+            mail.send(msg)
+            flash('A temporary password has been sent to your email. Please check your inbox (and spam folder).', 'success')
+        except Exception as e:
+            flash('Failed to send reset email. Please try again later.', 'error')
+            conn.close()
+            return redirect(url_for('login'))
+    else:
+        flash('Email not found in our records.', 'error')
+    
+    conn.close()
+    return redirect(url_for('login'))
 
 @app.route('/admin_login', methods=['GET', 'POST'])
 def admin_login():
@@ -430,9 +489,6 @@ def admin_change_password():
 
 @app.route('/brands')
 def brands():
-    if 'user_email' not in session:
-        flash('Please log in to view brands!', 'error')
-        return redirect(url_for('login'))
     email = session.get('user_email', None)
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
@@ -474,7 +530,7 @@ def logout():
     session.pop('user_address', None)
     session.pop('admin', None)
     flash('You have been logged out!', 'success')
-    return redirect(url_for('index'))  # Redirect to index.html after logout
+    return redirect(url_for('index'))
 
 @app.route('/account')
 def account():

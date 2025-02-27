@@ -104,12 +104,7 @@ body {
 }
 
 /* Slider */
-.slider {
-  background-image: url('../static/images/back.jpg');
-  background-size: cover;
-  overflow: hidden;
-  position: relative;
-}
+
 
 .sliderWrapper {
   display: flex;
