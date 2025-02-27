@@ -62,8 +62,47 @@
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
-                                <div class="invalid-feedback">Please enter a password (min 8 characters).</div>
+                                <small id="passwordHelp" class="form-text text-muted">
+                                    Must be at least 8 characters, contain uppercase, lowercase, numbers & symbols.
+                                </small>
+                                <div class="invalid-feedback">Please enter a strong password.</div>
                             </div>
+                            
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    const passwordInput = document.getElementById("password");
+                                    const togglePassword = document.getElementById("togglePassword");
+                                    const passwordHelp = document.getElementById("passwordHelp");
+                            
+                                    // Toggle password visibility
+                                    togglePassword.addEventListener("click", function () {
+                                        if (passwordInput.type === "password") {
+                                            passwordInput.type = "text";
+                                            togglePassword.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                                        } else {
+                                            passwordInput.type = "password";
+                                            togglePassword.innerHTML = '<i class="fas fa-eye"></i>';
+                                        }
+                                    });
+                            
+                                    // Password validation
+                                    passwordInput.addEventListener("input", function () {
+                                        const password = passwordInput.value;
+                                        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+                            
+                                        if (regex.test(password)) {
+                                            passwordInput.classList.remove("is-invalid");
+                                            passwordInput.classList.add("is-valid");
+                                            passwordHelp.style.color = "green";
+                                        } else {
+                                            passwordInput.classList.remove("is-valid");
+                                            passwordInput.classList.add("is-invalid");
+                                            passwordHelp.style.color = "red";
+                                        }
+                                    });
+                                });
+                            </script>
+                            
                             <div class="mb-3" data-aos="fade-left">
                                 <label for="confirmPassword" class="form-label fw-bold text-dark">Confirm Password</label>
                                 <input type="password" class="form-control form-control-lg" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>

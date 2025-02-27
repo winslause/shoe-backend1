@@ -86,9 +86,9 @@
                         <div class="card shadow-sm h-100">
                             <div class="card-body">
                                 <h5>Account Details</h5>
-                                <p><strong>Name:</strong> {{ name or 'Winslaise Shioso' }}</p>
+                                <p><strong>Name:</strong> {{ name }}</p>
                                 <p><strong>Email:</strong> {{ email }}</p>
-                                <p><strong>Phone:</strong> {{ phone or session.get('user_phone', '0769525570') }}</p>
+                                <p><strong>Phone:</strong> {{ phone }}</p>
                                 <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button>
                                 <button class="btn btn-primary w-100 mt-2" data-bs-toggle="modal" data-bs-target="#updatePasswordModal">Update Password</button>
                             </div>
@@ -101,11 +101,11 @@
                             <div class="card-body">
                                 <h5>Address Book</h5>
                                 <p><strong>Your default shipping address:</strong></p>
-                                <p>{{ name or 'Winslaise Shioso' }}</p>
+                                <p>{{ name }}</p>
                                 <p>{{ email }}</p>
-                                <p>{{ phone or session.get('user_phone', '0769525570') }}</p>
-                                <p>{{ address or session.get('user_address', 'Kitale, Trans-Nzoia') }}</p>
-                                <p>+254 769525570 / +254 769525570</p>
+                                <p>{{ phone }}</p>
+                                <p>{{ address }}</p>
+                                <p>Contact Us: +254 769525570</p>
                                 <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#editAddressModal">Edit Address</button>
                             </div>
                         </div>
@@ -150,7 +150,7 @@
                     <form id="profileForm">
                         <div class="mb-3">
                             <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name" value="{{ name or 'Winslaise Shioso' }}" required>
+                            <input type="text" class="form-control" id="name" value="{{ name }}" required>
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
@@ -158,7 +158,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="phone" class="form-label">Phone</label>
-                            <input type="tel" class="form-control" id="phone" value="{{ phone or session.get('user_phone', '0769525570') }}" required>
+                            <input type="tel" class="form-control" id="phone" value="{{ phone }}" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                     </form>
@@ -208,7 +208,7 @@
                     <form id="addressForm">
                         <div class="mb-3">
                             <label for="addressName" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="addressName" value="{{ name or 'Winslaise Shioso' }}" required>
+                            <input type="text" class="form-control" id="addressName" value="{{ name }}" required>
                         </div>
                         <div class="mb-3">
                             <label for="addressEmail" class="form-label">Email</label>
@@ -216,11 +216,11 @@
                         </div>
                         <div class="mb-3">
                             <label for="addressPhone" class="form-label">Phone</label>
-                            <input type="tel" class="form-control" id="addressPhone" value="{{ phone or session.get('user_phone', '0769525570') }}" required>
+                            <input type="tel" class="form-control" id="addressPhone" value="{{ phone }}" required>
                         </div>
                         <div class="mb-3">
                             <label for="address" class="form-label">Address</label>
-                            <input type="text" class="form-control" id="address" value="{{ address or session.get('user_address', 'Kitale, Trans-Nzoia') }}" required>
+                            <input type="text" class="form-control" id="address" value="{{ address }}" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                     </form>
@@ -284,12 +284,12 @@
                             <div class="mb-3">
                                 <label for="rating" class="form-label">Rating</label>
                                 <select class="form-select" id="rating">
-                                <option value="5">5 Stars</option>
-                                <option value="4">4 Stars</option>
-                                <option value="3">3 Stars</option>
-                                <option value="2">2 Stars</option>
-                                <option value="1">1 Star</option>
-                            </select>
+                                    <option value="5">5 Stars</option>
+                                    <option value="4">4 Stars</option>
+                                    <option value="3">3 Stars</option>
+                                    <option value="2">2 Stars</option>
+                                    <option value="1">1 Star</option>
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label for="reviewText" class="form-label">Review</label>

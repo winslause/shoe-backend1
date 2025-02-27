@@ -30,6 +30,8 @@
                             <li><a class="dropdown-item" href="#sales">Sales</a></li>
                             <li><a class="dropdown-item" href="#products">Products</a></li>
                             <li><a class="dropdown-item" href="#contact">Contact Us</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
@@ -109,6 +111,8 @@
                                     <tr>
                                         <th>Order ID</th>
                                         <th>Customer</th>
+                                        <th>Phone</th>
+                                        <th>Address</th>
                                         <th>Product</th>
                                         <th>Date</th>
                                         <th>Status</th>
@@ -120,6 +124,8 @@
                                         <tr>
                                             <td>#{{ order.id }}</td>
                                             <td>{{ order.user_name }}</td>
+                                            <td>{{ order.user_phone }}</td>
+                                            <td>{{ order.user_address | default('N/A') }}</td>
                                             <td>{{ order.shoe_name }}</td>
                                             <td>{{ order.order_date }}</td>
                                             <td>
@@ -149,6 +155,8 @@
                                         <th>ID</th>
                                         <th>Name</th>
                                         <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Address</th>
                                         <th>Joined</th>
                                         <th>Action</th>
                                     </tr>
@@ -159,6 +167,8 @@
                                             <td>{{ user.id }}</td>
                                             <td>{{ user.name }}</td>
                                             <td>{{ user.email }}</td>
+                                            <td>{{ user.phone }}</td>
+                                            <td>{{ user.address | default('N/A') }}</td>
                                             <td>{{ user.joined_date }}</td>
                                             <td>
                                                 <button class="btn btn-primary btn-sm edit-user-btn" data-bs-toggle="modal" data-bs-target="#editUserModal" data-id="{{ user.id }}" data-name="{{ user.name }}" data-email="{{ user.email }}">Edit</button>
@@ -190,10 +200,10 @@
                                     {% for sale in sales %}
                                         <tr>
                                             <td>{{ sale.date }}</td>
-                                            <td>{{ sale.shoe_name }}</td>
+                                            <td>{{ sale.shoe_name | default('Unknown Shoe') }}</td>
                                             <td>{{ sale.quantity }}</td>
                                             <td>SH.{{ sale.revenue }}</td>
-                                            <td>{{ '+' if sale.profit_loss >= 0 else '-'}}SH.{{ sale.profit_loss | abs }}</td>
+                                            <td>{{ '+' if sale.profit_loss >= 0 else '-' }}SH.{{ sale.profit_loss | abs }}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -546,6 +556,34 @@
                             <textarea class="form-control" id="refundReason" name="reason" rows="3" required></textarea>
                         </div>
                         <button type="submit" class="btn btn-success">Process Refund</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Change Admin Password</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="currentPassword" name="current_password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" name="new_password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Change Password</button>
                     </form>
                 </div>
             </div>

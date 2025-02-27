@@ -14,10 +14,12 @@ $(document).ready(function () {
     $('.nav-link, .dropdown-item').click(function (e) {
         e.preventDefault();
         const target = $(this).attr('href').substring(1);
-        $('.section').hide();
-        $(`#${target}`).show();
-        $('.nav-link').removeClass('active');
-        $(this).addClass('active');
+        if (target !== '') {  // Ignore empty href from Change Password link
+            $('.section').hide();
+            $(`#${target}`).show();
+            $('.nav-link').removeClass('active');
+            $(this).addClass('active');
+        }
     });
 
     $('#dashboard').show();
@@ -231,6 +233,36 @@ $(document).ready(function () {
             },
             error: function() {
                 alert('Error processing refund.');
+            }
+        });
+    });
+
+    // Handle Admin Change Password Form Submission
+    $('#changePasswordForm').submit(function (e) {
+        e.preventDefault();
+        const newPassword = $('#newPassword').val();
+        const confirmPassword = $('#confirmPassword').val();
+        
+        if (newPassword !== confirmPassword) {
+            alert('New password and confirmation do not match!');
+            return;
+        }
+
+        $.ajax({
+            url: '/admin_change_password',
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    $('#changePasswordForm')[0].reset();
+                    $('#changePasswordModal').modal('hide');
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function() {
+                alert('Error changing password.');
             }
         });
     });

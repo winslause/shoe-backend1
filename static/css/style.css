@@ -105,7 +105,7 @@ body {
 
 /* Slider */
 .slider {
-  background-image: url('images/back.jpg');
+  background-image: url('../static/images/back.jpg');
   background-size: cover;
   overflow: hidden;
   position: relative;
@@ -400,7 +400,7 @@ label {
 .about-us-section {
   padding: 50px 0;
   background-color: #072D4B;
-  background-image: url('./images/back2.jpg');
+  background-image: url('../static/images/back2.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
