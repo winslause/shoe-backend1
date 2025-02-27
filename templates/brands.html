@@ -176,6 +176,42 @@
             </section>
         </div>
     </main>
+    <!-- Floating WhatsApp Button -->
+<a href="https://wa.me/254769525570" target="_blank" class="whatsapp-float">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" class="whatsapp-icon">
+</a>
+<style>
+    .whatsapp-float {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        animation: zoom-in-out 1.5s infinite alternate;
+    }
+    
+    .whatsapp-icon {
+        width: 60px;
+        height: 60px;
+        transition: transform 0.3s;
+    }
+    
+    @media (max-width: 768px) {
+        .whatsapp-icon {
+            width: 45px;
+            height: 45px;
+        }
+    }
+    
+    @keyframes zoom-in-out {
+        0% {
+            transform: scale(1);
+        }
+        100% {
+            transform: scale(1.2);
+        }
+    }
+    
+</style>
 
     <!-- JavaScript Dependencies -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
