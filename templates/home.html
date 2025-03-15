@@ -123,7 +123,7 @@
                                     {% for order in orders %}
                                         <tr>
                                             <td>#{{ order.id }}</td>
-                                            <td>{{ order.user_name }}</td>
+                                            <td>{{ order.user_email }}</td>
                                             <td>{{ order.user_phone }}</td>
                                             <td>{{ order.user_address | default('N/A') }}</td>
                                             <td>{{ order.shoe_name }}</td>

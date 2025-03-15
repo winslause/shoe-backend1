@@ -6,6 +6,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mail import Mail, Message
 import random
 import string
+import logging
+
+# Set up logging for debugging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'  # Replace with a secure key in production
@@ -46,10 +51,11 @@ def init_db():
                   details TEXT NOT NULL,
                   image TEXT NOT NULL,
                   rating REAL)''')
+    # Updated orders table to use user_email instead of user_name
     c.execute('''CREATE TABLE IF NOT EXISTS orders 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
                   shoe_id INTEGER NOT NULL,
-                  user_name TEXT NOT NULL,
+                  user_email TEXT NOT NULL,
                   user_phone TEXT NOT NULL,
                   status TEXT NOT NULL,
                   order_date TEXT NOT NULL,
@@ -88,11 +94,36 @@ def init_db():
                   review TEXT NOT NULL,
                   date TEXT NOT NULL,
                   FOREIGN KEY(order_id) REFERENCES orders(id))''')
+    
+    # Add address column to users if not exists
     try:
         c.execute('ALTER TABLE users ADD COLUMN address TEXT')
-        print("Added address column to existing users table.")
+        logger.info("Added address column to existing users table.")
     except sqlite3.OperationalError:
         pass
+    
+    # Migrate orders table from user_name to user_email if needed
+    c.execute("PRAGMA table_info(orders)")
+    columns = [col[1] for col in c.fetchall()]
+    if 'user_name' in columns and 'user_email' not in columns:
+        logger.info("Migrating orders table to use user_email...")
+        c.execute('''CREATE TABLE orders_new 
+                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                      shoe_id INTEGER NOT NULL,
+                      user_email TEXT NOT NULL,
+                      user_phone TEXT NOT NULL,
+                      status TEXT NOT NULL,
+                      order_date TEXT NOT NULL,
+                      total REAL NOT NULL,
+                      FOREIGN KEY(shoe_id) REFERENCES shoes(id))''')
+        c.execute('''INSERT INTO orders_new (id, shoe_id, user_email, user_phone, status, order_date, total)
+                     SELECT o.id, o.shoe_id, u.email, o.user_phone, o.status, o.order_date, o.total
+                     FROM orders o
+                     LEFT JOIN users u ON o.user_name = u.name''')
+        c.execute('DROP TABLE orders')
+        c.execute('ALTER TABLE orders_new RENAME TO orders')
+        logger.info("Orders table migrated successfully.")
+    
     conn.commit()
     conn.close()
     populate_initial_data()
@@ -124,16 +155,16 @@ def populate_initial_data():
     if c.fetchone()[0] == 0:
         c.execute('INSERT INTO admins (name, password) VALUES (?, ?)', ('admin', generate_password_hash('admin')))
         conn.commit()
-        print("Admin user created with name: admin, password: admin (hashed)")
+        logger.info("Admin user created with name: admin, password: admin (hashed)")
     c.execute('SELECT COUNT(*) FROM sales')
     if c.fetchone()[0] == 0:
         initial_sales = [
             ('2025-02-27', 15, 7, 2000, -456.15),
             ('2025-02-28', 2, 15, 2000, 1000.00)
         ]
-        c.executemany('INSERT INTO sales (date, shoe_id, quantity, revenue, profit_loss) VALUES (?, ?, ?, ?, ?)', initial_shoes)
+        c.executemany('INSERT INTO sales (date, shoe_id, quantity, revenue, profit_loss) VALUES (?, ?, ?, ?, ?)', initial_sales)
         conn.commit()
-        print("Sample sales data added")
+        logger.info("Sample sales data added")
     conn.close()
 
 with app.app_context():
@@ -185,7 +216,7 @@ def login():
             session['user_name'] = user[1]
             session['user_phone'] = user[3]
             session['user_address'] = user[5] if len(user) > 5 else None
-            print(f"User logged in: {email}, Session: {session}")  # Debug
+            logger.debug(f"User logged in: {email}, Session: {session}")
             flash('Login successful!', 'success')
             return redirect(url_for('brands'))
         else:
@@ -202,15 +233,12 @@ def reset_password():
     user = c.fetchone()
     
     if user:
-        # Generate a random temporary password
         temp_password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
         hashed_temp_password = generate_password_hash(temp_password)
         
-        # Update user's password in database
         c.execute('UPDATE users SET password = ? WHERE email = ?', (hashed_temp_password, email))
         conn.commit()
         
-        # Send email with temporary password
         msg = Message('Password Reset - Kanaan Shoe Collection',
                      recipients=[email])
         msg.body = f'''
@@ -231,6 +259,7 @@ def reset_password():
             mail.send(msg)
             flash('A temporary password has been sent to your email. Please check your inbox (and spam folder).', 'success')
         except Exception as e:
+            logger.error(f"Failed to send reset email: {str(e)}")
             flash('Failed to send reset email. Please try again later.', 'error')
             conn.close()
             return redirect(url_for('login'))
@@ -249,7 +278,7 @@ def admin_login():
         c = conn.cursor()
         c.execute('SELECT * FROM admins WHERE name = ?', (username,))
         admin = c.fetchone()
-        print(f"Admin fetched: {admin}")
+        logger.debug(f"Admin fetched: {admin}")
         conn.close()
         if admin and check_password_hash(admin[2], password):
             session['admin'] = admin[1]
@@ -257,7 +286,7 @@ def admin_login():
             return redirect(url_for('admin_home'))
         else:
             flash('Invalid username or password! Please try again.', 'error')
-            print(f"Login failed for {username}")
+            logger.debug(f"Login failed for {username}")
             return redirect(url_for('admin_login'))
     return render_template('admin_login.html')
 
@@ -270,11 +299,11 @@ def admin_home():
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
     
-    c.execute('''SELECT o.id, o.shoe_id, o.user_name, s.name, o.order_date, o.status, o.user_phone, u.address 
+    c.execute('''SELECT o.id, o.shoe_id, o.user_email, s.name, o.order_date, o.status, o.user_phone, u.address 
                  FROM orders o 
                  JOIN shoes s ON o.shoe_id = s.id 
-                 LEFT JOIN users u ON o.user_name = u.name''')
-    orders = [{'id': row[0], 'shoe_id': row[1], 'user_name': row[2], 'shoe_name': row[3], 'order_date': row[4], 
+                 LEFT JOIN users u ON o.user_email = u.email''')
+    orders = [{'id': row[0], 'shoe_id': row[1], 'user_email': row[2], 'shoe_name': row[3], 'order_date': row[4], 
                'status': row[5], 'user_phone': row[6], 'user_address': row[7]} for row in c.fetchall()]
     
     c.execute('SELECT id, name, email, phone, address, joined_date FROM users')
@@ -285,7 +314,7 @@ def admin_home():
                  FROM sales LEFT JOIN shoes ON sales.shoe_id = shoes.id''')
     sales = [{'id': row[0], 'date': row[1], 'shoe_name': row[2] if row[2] else 'Unknown Shoe', 'quantity': row[3], 
               'revenue': row[4], 'profit_loss': row[5]} for row in c.fetchall()]
-    print(f"Sales data fetched: {sales}")  # Debug to check sales data
+    logger.debug(f"Sales data fetched: {sales}")
     
     c.execute('SELECT id, name, category, size, price, details, image FROM shoes')
     products = [{'id': row[0], 'name': row[1], 'category': row[2], 'size': row[3], 'price': row[4], 'details': row[5], 'image': row[6]} 
@@ -327,7 +356,7 @@ def update_order():
 def add_order():
     if 'admin' not in session:
         return jsonify({'success': False, 'message': 'Unauthorized'}), 401
-    customer = request.form['customer']
+    customer_email = request.form['customer']  # Expecting email now
     shoe_id = request.form['shoe_id']
     phone = request.form['phone']
     date = request.form['date']
@@ -337,8 +366,8 @@ def add_order():
     c.execute('SELECT price FROM shoes WHERE id = ?', (shoe_id,))
     shoe = c.fetchone()
     total = float(shoe[0]) if shoe else 0.0
-    c.execute('INSERT INTO orders (shoe_id, user_name, user_phone, status, order_date, total) VALUES (?, ?, ?, ?, ?, ?)',
-              (shoe_id, customer, phone, status, date, total))
+    c.execute('INSERT INTO orders (shoe_id, user_email, user_phone, status, order_date, total) VALUES (?, ?, ?, ?, ?, ?)',
+              (shoe_id, customer_email, phone, status, date, total))
     conn.commit()
     conn.close()
     return jsonify({'success': True, 'message': 'Order added successfully!'})
@@ -503,7 +532,7 @@ def order():
     if 'user_email' not in session:
         return jsonify({'success': False, 'message': 'Please log in to place an order!'}), 401
     shoe_id = request.form.get('shoe_id')
-    user_name = session.get('user_name')
+    user_email = session.get('user_email')  # Use email from session
     user_phone = session.get('user_phone')
     order_date = datetime.now().strftime('%Y-%m-%d')
     status = 'pending'
@@ -515,10 +544,15 @@ def order():
         conn.close()
         return jsonify({'success': False, 'message': 'Shoe not found!'}), 404
     total = float(shoe[0])
-    c.execute('INSERT INTO orders (shoe_id, user_name, user_phone, status, order_date, total) VALUES (?, ?, ?, ?, ?, ?)',
-              (shoe_id, user_name, user_phone, status, order_date, total))
-    conn.commit()
-    print(f"Order placed: shoe_id={shoe_id}, user_name={user_name}, status={status}")  # Debug
+    try:
+        c.execute('INSERT INTO orders (shoe_id, user_email, user_phone, status, order_date, total) VALUES (?, ?, ?, ?, ?, ?)',
+                  (shoe_id, user_email, user_phone, status, order_date, total))
+        conn.commit()
+        logger.debug(f"Order placed: shoe_id={shoe_id}, user_email={user_email}, status={status}")
+    except sqlite3.IntegrityError as e:
+        logger.error(f"Database error: {str(e)}")
+        conn.close()
+        return jsonify({'success': False, 'message': 'Database error occurred!'}), 500
     conn.close()
     return jsonify({'success': True, 'message': 'Order placed successfully!'})
 
@@ -545,14 +579,14 @@ def account():
         user = c.fetchone()
         conn.close()
         if user:
-            print(f"Rendering account for: {user}")  # Debug
+            logger.debug(f"Rendering account for: {user}")
             return render_template('account.html', email=user[1], name=user[0], phone=user[2], address=user[3])
     except sqlite3.OperationalError:
         c.execute('SELECT name, email, phone FROM users WHERE email = ?', (email,))
         user = c.fetchone()
         conn.close()
         if user:
-            print(f"Rendering account (fallback) for: {user}")
+            logger.debug(f"Rendering account (fallback) for: {user}")
             return render_template('account.html', email=user[1], name=user[0], phone=user[2], address=None)
     return render_template('account.html', email=email, name='User', phone='0769525570', address='Kitale, Trans-Nzoia')
 
@@ -560,15 +594,17 @@ def account():
 def get_orders():
     if 'user_email' not in session:
         return jsonify({'success': False, 'message': 'Please log in to view orders!'}), 401
-    user_name = session.get('user_name')
+    user_email = session.get('user_email')  # Use email from session
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
     c.execute('''SELECT o.id, s.name AS shoe_name, o.order_date, o.status, o.total 
-                 FROM orders o JOIN shoes s ON o.shoe_id = s.id 
-                 WHERE o.user_name = ?''', (user_name,))
-    orders = [{'id': row[0], 'shoe_name': row[1], 'order_date': row[2], 'status': row[3], 'total': row[4]} for row in c.fetchall()]
+                 FROM orders o 
+                 JOIN shoes s ON o.shoe_id = s.id 
+                 WHERE o.user_email = ?''', (user_email,))
+    orders = [{'id': row[0], 'shoe_name': row[1], 'order_date': row[2], 'status': row[3], 'total': row[4]} 
+              for row in c.fetchall()]
     conn.close()
-    print(f"Orders fetched for {user_name}: {orders}")  # Debug
+    logger.debug(f"Orders fetched for {user_email}: {orders}")
     return jsonify(orders)
 
 @app.route('/update_profile', methods=['POST'])
@@ -580,7 +616,7 @@ def update_profile():
     phone = request.form.get('phone')
     user_email = session['user_email']
     
-    print(f"Updating profile: Old email={user_email}, New email={email}, Name={name}, Phone={phone}")  # Debug
+    logger.debug(f"Updating profile: Old email={user_email}, New email={email}, Name={name}, Phone={phone}")
     
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
@@ -588,7 +624,7 @@ def update_profile():
         c.execute('SELECT id FROM users WHERE email = ?', (user_email,))
         if not c.fetchone():
             conn.close()
-            print(f"Profile update failed: User with email {user_email} not found in database")
+            logger.error(f"Profile update failed: User with email {user_email} not found in database")
             return jsonify({'success': False, 'message': 'User not found!'}), 404
         
         c.execute('UPDATE users SET name = ?, email = ?, phone = ? WHERE email = ?', 
@@ -598,7 +634,7 @@ def update_profile():
         session['user_email'] = email
         session['user_name'] = name
         session['user_phone'] = phone
-        print(f"Profile updated: New session={session}")  # Debug
+        logger.debug(f"Profile updated: New session={session}")
         conn.close()
         return jsonify({'success': True, 'message': 'Profile updated successfully!'})
     except sqlite3.IntegrityError:
@@ -637,7 +673,7 @@ def update_address():
     address = request.form.get('address')
     user_email = session['user_email']
     
-    print(f"Updating address: Old email={user_email}, New email={email}, Name={name}, Phone={phone}, Address={address}")  # Debug
+    logger.debug(f"Updating address: Old email={user_email}, New email={email}, Name={name}, Phone={phone}, Address={address}")
     
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
@@ -645,7 +681,7 @@ def update_address():
         c.execute('SELECT id FROM users WHERE email = ?', (user_email,))
         if not c.fetchone():
             conn.close()
-            print(f"Address update failed: User with email {user_email} not found in database")
+            logger.error(f"Address update failed: User with email {user_email} not found in database")
             return jsonify({'success': False, 'message': 'User not found!'}), 404
         
         c.execute('UPDATE users SET name = ?, email = ?, phone = ?, address = ? WHERE email = ?', 
@@ -656,7 +692,7 @@ def update_address():
         session['user_name'] = name
         session['user_phone'] = phone
         session['user_address'] = address
-        print(f"Address updated: New session={session}")  # Debug
+        logger.debug(f"Address updated: New session={session}")
         conn.close()
         return jsonify({'success': True, 'message': 'Address updated successfully!'})
     except sqlite3.IntegrityError:
@@ -692,8 +728,8 @@ def cancel_order():
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
     try:
-        c.execute('UPDATE orders SET status = ? WHERE id = ? AND user_name = ?', 
-                  ('Cancelled', order_id, session.get('user_name')))
+        c.execute('UPDATE orders SET status = ? WHERE id = ? AND user_email = ?', 
+                  ('Cancelled', order_id, session.get('user_email')))
         if c.rowcount == 0:
             conn.close()
             return jsonify({'success': False, 'message': 'Order not found or unauthorized!'}), 404
