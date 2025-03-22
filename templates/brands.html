@@ -173,7 +173,45 @@
 
                 <!-- Shoe List -->
                 <div id="shoeList" class="shoe-grid"></div>
+
+
+
+
             </section>
+            <style>
+                .shoe-grid {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr); /* 4 columns */
+                    gap: 10px; /* Space between images */
+                  }
+                  
+                  .shoe-grid .image-container {
+                    width: 100%;
+                    height: 300px; /* Same height for all images */
+                    overflow: hidden; /* Ensures that images do not overflow the container */
+                  }
+                  
+                  .shoe-grid img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover; /* Ensures the image fills the container, maintaining aspect ratio but cropping if necessary */
+                  }
+                  
+                  /* Keep 4 columns for smaller screens */
+                  @media (max-width: 768px) {
+                    .shoe-grid {
+                      grid-template-columns: repeat(4, 1fr); /* Keep 4 columns for smaller screens */
+                    }
+                  }
+                  
+                  /* Optional: reduce to 2 columns on very small screens */
+                  @media (max-width: 480px) {
+                    .shoe-grid {
+                      grid-template-columns: repeat(2, 1fr); /* Reduce to 2 columns on very small screens */
+                    }
+                  }
+                  
+            </style>
         </div>
     </main>
     <!-- Floating WhatsApp Button -->
