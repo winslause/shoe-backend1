@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here'  # Replace with a secure key in production
+app.secret_key = 'shoestore'  # Replace with a secure key in production
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
